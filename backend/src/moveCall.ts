@@ -7,11 +7,8 @@ import {
   SIGNATURE_SCHEME_TO_FLAG,
   PRIVATE_KEY_SIZE,
   TransactionBlock,
-  TransactionArgument,
 } from "@mysten/sui.js";
 import dotenv from "dotenv";
-import { version } from "os";
-import WebSocket from "ws";
 
 dotenv.config();
 
@@ -26,6 +23,14 @@ const END_GAME_FN_NAME = "end_game";
 const SETTLE_UP_GAME_FN_NAME = "settle_up_game";
 const FILL_CARD_DECK_FN_NAME = "fill_10_cards_to_card_deck";
 
+export interface ITxResponse {
+    flag: string;
+    digest: string;
+    effects: any;
+    events: any;
+    objectChanges: any;
+    transaction: any;
+}
 
 export const getProvider = (
   fullnode: string,
@@ -60,8 +65,7 @@ export const startGame = async (
   betting_amount: string,
   package_id: string,
   game_table_id: string,
-  ws: WebSocket
-) => {
+): Promise<ITxResponse> => {
   const tx = new TransactionBlock();
   const bettingAmount_mist = Math.floor(
     parseFloat(betting_amount) * MIST_PER_SUI
@@ -84,7 +88,7 @@ export const startGame = async (
     },
   });
 
-  const data = {
+  const data: ITxResponse = {
     flag: "start game done",
     digest: result.digest,
     effects: result.effects,
@@ -92,7 +96,8 @@ export const startGame = async (
     objectChanges: result.objectChanges,
     transaction: result.transaction,
   };
-  ws.send(JSON.stringify(data));
+
+  return data;
 };
 
 export const getRandomNumbers = (): string[] => {
@@ -123,8 +128,7 @@ export const fillCardDeck = async (
   signer: RawSigner,
   package_id: string,
   game_table_id: string,
-  ws: WebSocket
-) => {
+): Promise<ITxResponse> => {
   const tx = new TransactionBlock();
   tx.setGasBudget(FILL_CARD_DECK_GAS_BUDEGT);
 
@@ -163,7 +167,7 @@ export const fillCardDeck = async (
     objectChanges: result.objectChanges,
     transaction: result.transaction,
   };
-  ws.send(JSON.stringify(data));
+  return data;
 };
 
 export const goCard = async (
@@ -171,8 +175,7 @@ export const goCard = async (
   package_id: string,
   game_table_id: string,
   player_address: string,
-  ws: WebSocket
-) => {
+): Promise<ITxResponse> => {
   const tx = new TransactionBlock();
   tx.setGasBudget(GAS_BUDGET);
   tx.moveCall({
@@ -199,15 +202,14 @@ export const goCard = async (
     transaction: result.transaction,
   };
 
-  ws.send(JSON.stringify(data));
+  return data;
 };
 
 export const endGame = async (
   signer: RawSigner,
   package_id: string,
   game_table_id: string,
-  ws: WebSocket
-) => {
+): Promise<ITxResponse> => {
   const tx = new TransactionBlock();
   tx.setGasBudget(GAS_BUDGET);
   tx.moveCall({
@@ -234,15 +236,14 @@ export const endGame = async (
     objectChanges: result.objectChanges,
     transaction: result.transaction,
   };
-  ws.send(JSON.stringify(data));
+  return data;
 };
 
 export const settleUpGame = async (
   signer: RawSigner,
   package_id: string,
   game_table_id: string,
-  ws: WebSocket
-) => {
+): Promise<ITxResponse> => {
   const tx = new TransactionBlock();
   tx.setGasBudget(GAS_BUDGET);
   tx.moveCall({
@@ -268,5 +269,5 @@ export const settleUpGame = async (
     objectChanges: result.objectChanges,
     transaction: result.transaction,
   };
-  ws.send(JSON.stringify(data));
+  return data;
 };
