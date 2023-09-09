@@ -67,20 +67,20 @@ const GameTableInfo = ({
             fontWeight: "800",
           }}
           label={
-            isPlaying == 0
+            isPlaying === 0
               ? "Not Ready"
-              : isPlaying == 1
+              : isPlaying === 1
               ? "Ready"
-              : isPlaying == 2
+              : isPlaying === 2
               ? "Playing"
               : "End"
           }
           color={
             isPlaying == 0
               ? "error"
-              : isPlaying == 1
+              : isPlaying === 1
               ? "info"
-              : isPlaying == 2
+              : isPlaying === 2
               ? "secondary"
               : "primary"
           }
