@@ -13,3 +13,6 @@ sui.log*
 # Ignore all node_modules folders
 **/node_modules
 
+# Ignore Move build folders
+blackjack_game/build
+

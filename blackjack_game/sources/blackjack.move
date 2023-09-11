@@ -1,17 +1,12 @@
 module blackjack_game::blackjack {
   use sui::object::{Self,ID, UID};
   use std::option::{Self, Option};
-  use sui::coin::{Self, Coin};
+  use sui::coin::{Coin};
   use sui::sui::SUI;
   use sui::tx_context::{Self, TxContext};
   use sui::transfer;
   use std::vector;
   use sui::dynamic_object_field;
-  use std::string::{Self, String};
-  use sui::pay;
-  use sui::balance::Balance;
-  use std::bcs;
-  use sui::clock::{Self, Clock};
 
   // game object which can create game table
   struct GameInfo has key {
@@ -291,7 +286,7 @@ module blackjack_game::blackjack {
     let player_hand = create_hand(game, ctx);
     pass_hand_to_gametable(game_table, player_hand, ctx);
     // bet money
-    bet_player_money(game_table, money, ctx);
+    bet_player_money(game_table, money);
 
     game_table.is_playing = GAME_READY_STATE;
   }
@@ -304,7 +299,7 @@ module blackjack_game::blackjack {
     game_table.player_address = option::some(sender);
   }
 
-  fun bet_player_money(game_table: &mut GameTable, money: Coin<SUI>, ctx: &mut TxContext) {
+  fun bet_player_money(game_table: &mut GameTable, money: Coin<SUI>) {
     let money_box = dynamic_object_field::borrow_mut<vector<u8>,MoneyBox>(&mut game_table.id, b"money_box");
     let money_id = object::id(&money);
     money_box.player_bet = option::some(money_id);
@@ -356,7 +351,7 @@ module blackjack_game::blackjack {
     assert!(card_deck.how_many_fill_card > 0, 403);
 
     // pass dealer money to money box
-    bet_dealer_money(game_table, money, ctx);
+    bet_dealer_money(game_table, money);
     // from now game in progress
     game_table.is_playing = GAME_IS_PLAYING;
 
@@ -370,7 +365,7 @@ module blackjack_game::blackjack {
     // player_hand.is_my_turn = true;
   }
 
-  fun bet_dealer_money(game_table: &mut GameTable, money: Coin<SUI>, ctx: &mut TxContext) {
+  fun bet_dealer_money(game_table: &mut GameTable, money: Coin<SUI>) {
     let money_box = dynamic_object_field::borrow_mut<vector<u8>,MoneyBox>(&mut game_table.id, b"money_box");
     let money_id = object::id(&money);
 
@@ -492,12 +487,12 @@ module blackjack_game::blackjack {
     dynamic_object_field::add(&mut game_table.id, b"dealer_hand", dealer_hand);
     
     // check winner
-    check_winner(game_table, ctx); 
+    check_winner(game_table);
 
     game_table.is_playing = GAME_END;
   }
 
-  fun check_winner(game_table: &mut GameTable, ctx: &mut TxContext) {
+  fun check_winner(game_table: &mut GameTable) {
     let dealer_hand = dynamic_object_field::remove<vector<u8>, Hand> (&mut game_table.id, b"dealer_hand");
     let player_hand = dynamic_object_field::remove<vector<u8>, Hand> (&mut game_table.id, b"player_hand"); 
 
