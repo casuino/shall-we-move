@@ -1,6 +1,7 @@
 sui.log*
 
 .env
+.DS_Store
 
 *.pem
 *.key
