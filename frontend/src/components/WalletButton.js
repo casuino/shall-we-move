@@ -10,14 +10,8 @@ function WalletButton() {
   const wallet = useWallet();
 
   useEffect(() => {
-    if (wallet.status == "connected") {
-      console.log("walletbutton wallet status: ", wallet.status);
-      console.log("walletbutton wallet address: ", wallet.account.address);
-      console.log("walletbutton wallect balance: ", wallet);
+    if (wallet.status === "connected") {
       navigate("/game");
-    } else {
-      console.log("walletbutton wallet status2", wallet.status);
-      navigate("/");
     }
   }, [wallet.connected]);
 
