@@ -11,7 +11,7 @@ function WalletButton() {
 
   useEffect(() => {
     if (wallet.status === "connected") {
-      navigate("/game");
+      navigate("/tutorial");
     }
   }, [wallet.connected]);
 

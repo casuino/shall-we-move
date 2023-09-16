@@ -1,8 +1,9 @@
-import { Route, Routes, Outlet } from "react-router-dom";
+import { Route, Routes, Outlet, useLocation } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Navbar from "./components/Navbar";
 import Game from "./pages/Game";
 import Landing from "./pages/Landing";
+import Tutorial from "./pages/Tutorial";
 import { ColorModeContext, useMode } from "./theme";
 import { ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
@@ -12,6 +13,7 @@ import Exchange from "./pages/Exchange";
 
 export default function App() {
   const [theme, colorMode] = useMode();
+  const location = useLocation();
 
   return (
     <RecoilRoot>
@@ -28,11 +30,12 @@ export default function App() {
                 },
               ]}
             >
-              <Navbar />
+              {location.pathname !== "/tutorial" && <Navbar />}
               <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/game" element={<Game />} />
                 <Route path="/exchange" element={<Exchange />} />
+                <Route path="/tutorial" element={<Tutorial />} />
               </Routes>
             </WalletProvider>
           </Box>
