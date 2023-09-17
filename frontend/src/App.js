@@ -1,4 +1,4 @@
-import { Route, Routes, Outlet, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Navbar from "./components/Navbar";
 import Game from "./pages/Game";
@@ -7,7 +7,7 @@ import Tutorial from "./pages/Tutorial";
 import { ColorModeContext, useMode } from "./theme";
 import { ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
-import { WalletProvider, useWallet } from "@suiet/wallet-kit";
+import { WalletProvider } from "@suiet/wallet-kit";
 import Exchange from "./pages/Exchange";
 
 export default function App() {

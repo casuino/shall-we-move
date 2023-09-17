@@ -4,27 +4,15 @@ import { useEffect } from "react";
 import "@suiet/wallet-kit/style.css";
 import "./suiet-wallet-kit-custom.css";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState } from "recoil";
-import { isWalletConnectedAtom } from "../recoil";
 
 function WalletButton() {
-  const navigate = useNavigate();
   const wallet = useWallet();
-  const [isWalletConnected, setIsWalletConnected] = useRecoilState(
-    isWalletConnectedAtom
-  );
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (wallet.status === "connected") {
-      setIsWalletConnected(true);
-    } else {
-      setIsWalletConnected(false);
     }
   }, [wallet.connected]);
-
-  useEffect(() => {
-    console.log("isWalletConnected: ", isWalletConnected);
-  }, [isWalletConnected]);
 
   return (
     <ConnectButton

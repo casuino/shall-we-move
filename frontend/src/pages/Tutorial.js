@@ -5,6 +5,7 @@ import { styled, keyframes } from "@mui/system";
 import WalletButton from "../components/WalletButton";
 import { useNavigate } from "react-router-dom";
 import { useWallet } from "@suiet/wallet-kit";
+import useSound from "use-sound";
 
 const typing = keyframes`
   from {
@@ -134,12 +135,18 @@ const chatFlow = {
   cashierSecondOnOption2Click: {
     message: "전에 연결한 SUI 지갑을 연동하시오!",
     option1: "wallet button",
-    option2: "game button",
+    option2: "disabled",
   },
   cashierFirstOnWalletTrue: {
     message: "또 왔소?",
     option1: "game button",
     option2: "exchange button",
+  },
+
+  cashierWalletConnectFirstTime: {
+    message: "축하합니다. 당신은 이제 CHIPSUI 를 환전할 수 있습니다.",
+    option1: "exchange button",
+    option2: "disabled",
   },
 };
 
@@ -147,13 +154,19 @@ const Tutorial = () => {
   const wallet = useWallet();
   const navigate = useNavigate();
   const [animationKey, setAnimationKey] = useState(0);
+  const [walletConnectFirstTime, setWalletConnectFirstTime] = useState(false);
   const [currentFlow, setCurrentFlow] = useState("cashierFirst");
+  const [playButtonSound] = useSound("/button_sound.mp3");
 
   useEffect(() => {
     console.log("wallet.status: ", wallet.status);
 
     if (wallet.status === "connected") {
-      setCurrentFlow("cashierFirstOnWalletTrue");
+      if (walletConnectFirstTime) {
+        setCurrentFlow("cashierWalletConnectFirstTime");
+      } else {
+        setCurrentFlow("cashierFirstOnWalletTrue");
+      }
     } else {
       setCurrentFlow("cashierFirst");
     }
@@ -166,6 +179,7 @@ const Tutorial = () => {
   }, [currentFlow]);
 
   const handleOptionClick = (option) => {
+    playButtonSound();
     const selectedOptionValue = chatFlow[currentFlow][option];
 
     if (selectedOptionValue === "game button") {
@@ -191,6 +205,12 @@ const Tutorial = () => {
             ? "cashierThirdOnOption1Click"
             : "cashierThirdOnOption2Click"
         );
+        break;
+
+      case "cashierThirdOnOption2Click":
+        if (option === "option1") {
+          setWalletConnectFirstTime(true); // Set walletConnectFirstTime to true here
+        }
         break;
 
       default:
