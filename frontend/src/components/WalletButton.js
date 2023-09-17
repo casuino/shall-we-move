@@ -1,19 +1,8 @@
-import { useWallet } from "@suiet/wallet-kit";
 import { ConnectButton } from "@suiet/wallet-kit";
-import { useEffect } from "react";
 import "@suiet/wallet-kit/style.css";
 import "./suiet-wallet-kit-custom.css";
-import { useNavigate } from "react-router-dom";
 
 function WalletButton() {
-  const wallet = useWallet();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (wallet.status === "connected") {
-    }
-  }, [wallet.connected]);
-
   return (
     <ConnectButton
     // The BaseError instance has properties like {code, message, details}

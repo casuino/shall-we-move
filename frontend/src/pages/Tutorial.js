@@ -38,10 +38,12 @@ const OptionsContainer = styled(Box)({
   height: "45vh",
 });
 
-const OptionButton = styled(Button)({
+const OptionButton = styled(Button)(({ hasWalletButton }) => ({
   width: "674px",
   height: "91px",
-  background: "#000000 0% 0% no-repeat padding-box",
+  background: hasWalletButton
+    ? "#0180FF"
+    : "#000000 0% 0% no-repeat padding-box",
   border: "1px solid #707070",
   borderRadius: "23px",
   opacity: 0.58,
@@ -50,7 +52,10 @@ const OptionButton = styled(Button)({
   justifyContent: "center",
   marginBottom: 40,
   font: "normal normal 800 32px/38px Tenada",
-});
+  "&:hover": {
+    background: hasWalletButton ? "#0172E5" : "#000000",
+  },
+}));
 
 const MessageContainer = styled(Box)({
   width: "85vw",
@@ -224,6 +229,7 @@ const Tutorial = () => {
         {chatFlow[currentFlow].option1 !== "disabled" && (
           <OptionButton
             variant="contained"
+            hasWalletButton={chatFlow[currentFlow].option1 === "wallet button"}
             onClick={() => handleOptionClick("option1")}
           >
             {chatFlow[currentFlow].option1 === "wallet button" ? (
@@ -236,6 +242,7 @@ const Tutorial = () => {
         {chatFlow[currentFlow].option2 !== "disabled" && (
           <OptionButton
             variant="contained"
+            hasWalletButton={chatFlow[currentFlow].option1 === "wallet button"}
             onClick={() => handleOptionClick("option2")}
           >
             {chatFlow[currentFlow].option2 === "wallet button" ? (
@@ -249,7 +256,6 @@ const Tutorial = () => {
       <MessageContainer>
         <Header>
           <Cashier>Cashier</Cashier>
-          <SkipButton variant="contained">skip</SkipButton>
         </Header>
         <MessageBox>
           <TypingText key={animationKey}>
