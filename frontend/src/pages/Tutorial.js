@@ -4,6 +4,7 @@ import { Box, Button } from "@mui/material";
 import { styled, keyframes } from "@mui/system";
 import WalletButton from "../components/WalletButton";
 import { useNavigate } from "react-router-dom";
+import { useWallet } from "@suiet/wallet-kit";
 
 const typing = keyframes`
   from {
@@ -32,7 +33,7 @@ const OptionsContainer = styled(Box)({
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  marginBottom: 80,
+  marginTop: 80,
   height: "45vh",
 });
 
@@ -143,10 +144,22 @@ const chatFlow = {
 };
 
 const Tutorial = () => {
+  const wallet = useWallet();
   const navigate = useNavigate();
-  const [currentFlow, setCurrentFlow] = useState("cashierFirst");
-  const [wallet, setWallet] = useState(false);
   const [animationKey, setAnimationKey] = useState(0);
+  const [currentFlow, setCurrentFlow] = useState("cashierFirst");
+
+  useEffect(() => {
+    console.log("wallet.status: ", wallet.status);
+
+    if (wallet.status === "connected") {
+      setCurrentFlow("cashierFirstOnWalletTrue");
+    } else {
+      setCurrentFlow("cashierFirst");
+    }
+  }, [wallet.status]);
+
+  console.log("current flow: ", currentFlow);
 
   useEffect(() => {
     setAnimationKey((prevKey) => prevKey + 1);
@@ -165,15 +178,11 @@ const Tutorial = () => {
 
     switch (currentFlow) {
       case "cashierFirst":
-        if (wallet) {
-          setCurrentFlow("cashierFirstOnWalletTrue");
-        } else {
-          setCurrentFlow(
-            option === "option1"
-              ? "cashierSecondOnOption1Click"
-              : "cashierSecondOnOption2Click"
-          );
-        }
+        setCurrentFlow(
+          option === "option1"
+            ? "cashierSecondOnOption1Click"
+            : "cashierSecondOnOption2Click"
+        );
         break;
 
       case "cashierSecondOnOption1Click":
