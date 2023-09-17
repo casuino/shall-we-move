@@ -13,15 +13,11 @@ import {
 } from "./moveCall";
 
 dotenv.config();
-const server = https.createServer({
-  cert: fs.readFileSync(process.env.HTTPS_CERT_PATH!), // 인증서 경로
-  key: fs.readFileSync(process.env.HTTPS_KEY_PATH!), // 개인키 경로
-});
 
 const provider = getProvider(process.env.RPC_URL!);
 const dealer_signer = getSigner(process.env.DEALER_PRIVATE_KEY!, provider);
 
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({ port: 8080 });
 const clients: Set<WebSocket> = new Set();
 
 interface ITxArgs {
@@ -147,5 +143,3 @@ wss.on("connection", (ws: WebSocket) => {
     console.log("Client disconnected.");
   });
 });
-
-server.listen(8080);
