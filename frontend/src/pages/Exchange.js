@@ -4,6 +4,7 @@ import { Box, Grid, Tab, Tabs, Typography, Button } from "@mui/material";
 import Buy from "../components/exchange/Buy";
 import Sell from "../components/exchange/Sell";
 import { Info } from "../components/exchange/Info";
+import cashierBackground from "../images/cashier.png";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -51,9 +52,11 @@ const Exchange = () => {
         backgroundSize: "cover",
         backgroundPosition: "center",
         flexWrap: "wrap",
+        backgroundImage: `url(${cashierBackground})`,
+        backgroundRepeat: "no-repeat",
       }}
     >
-      <Info />
+      {/* <Info /> */}
       <Box
         sx={{
           display: "flex",
@@ -63,7 +66,6 @@ const Exchange = () => {
           height: "70vh",
           width: "45vw",
           minWidth: "650px",
-          backgroundColor: "#232538",
           borderRadius: "30px",
           boxShadow: 6,
         }}

@@ -6,6 +6,8 @@ import WalletButton from "../components/WalletButton";
 import { useNavigate } from "react-router-dom";
 import { useWallet } from "@suiet/wallet-kit";
 import useSound from "use-sound";
+import tutorialBackground1 from "../images/tutorial1.png";
+import tutorialBackground2 from "../images/tutorial2.png";
 
 const typing = keyframes`
   from {
@@ -16,18 +18,20 @@ const typing = keyframes`
   }
 `;
 
-const Background = styled(Box)({
+const Background = styled(Box)(({ isFirst }) => ({
   width: "100vw",
   height: "100vh",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  backgroundImage: `url(${tutorialBackground})`,
+  backgroundImage: isFirst
+    ? `url(${tutorialBackground1})`
+    : `url(${tutorialBackground2})`,
   backgroundSize: "cover",
   backgroundPosition: "center",
   backgroundRepeat: "no-repeat",
-});
+}));
 
 const OptionsContainer = styled(Box)({
   display: "flex",
@@ -103,53 +107,45 @@ const Cashier = styled(Box)({
   justifyContent: "center",
 });
 
-const SkipButton = styled(Button)({
-  width: "100px",
-  height: "50px",
-  backgroundColor: "black",
-  border: "1px solid #707070",
-  borderRadius: "30px",
-});
-
 const chatFlow = {
   cashierFirst: {
-    message: "여긴 처음이요?",
-    option1: "네",
-    option2: "아니요",
+    message: "Is this your first time?",
+    option1: "yes",
+    option2: "no",
   },
   cashierSecondOnOption1Click: {
-    message: "여긴 어떻게 알고 온거요? 아, 됐고, SUI 토큰은 있소?",
-    option1: "SUI 토큰 있소",
-    option2: "SUI 토큰 없소",
+    message: "How did you get here? ..Anyway, you got some SUI coin?",
+    option1: "Yes I do",
+    option2: "No I don't",
   },
   cashierThirdOnOption1Click: {
-    message: "그렇군요! SUI 토큰을 환전하고 카지노를 플레이 하세요!",
+    message: "Good, now exchange for SUICOIN and play!",
     option1: "exchange button",
     option2: "disabled",
   },
   cashierThirdOnOption2Click: {
-    message: "SUI 토큰부터 사러 가시죠",
+    message: "Let's get you some SUI coin first..",
     option1: "wallet button",
     option2: "disabled",
   },
   cashierThiredOnOption2Click: {
-    message: "가서 SUI 토큰부터 사 오시오!",
+    message: "Go get some SUI coin first!",
     option1: "game button",
     option2: "exchange button",
   },
   cashierSecondOnOption2Click: {
-    message: "전에 연결한 SUI 지갑을 연동하시오!",
+    message: "Connect your SUI wallet first!",
     option1: "wallet button",
     option2: "disabled",
   },
   cashierFirstOnWalletTrue: {
-    message: "또 왔소?",
+    message: "Here you come again?",
     option1: "game button",
     option2: "exchange button",
   },
 
   cashierWalletConnectFirstTime: {
-    message: "축하합니다. 당신은 이제 CHIPSUI 를 환전할 수 있습니다.",
+    message: "Great, now you can get some CHIPSUI",
     option1: "exchange button",
     option2: "disabled",
   },
@@ -224,7 +220,7 @@ const Tutorial = () => {
   };
 
   return (
-    <Background>
+    <Background isFirst={false}>
       <OptionsContainer>
         {chatFlow[currentFlow].option1 !== "disabled" && (
           <OptionButton
