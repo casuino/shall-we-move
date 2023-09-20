@@ -7,7 +7,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.13.5",
-    "@mysten/sui.js": "^0.37.1",
+    "@mysten/sui.js": "^0.42.0",
     "@suiet/wallet-kit": "^0.2.15",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

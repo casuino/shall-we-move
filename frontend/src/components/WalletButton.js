@@ -6,14 +6,14 @@ import "./suiet-wallet-kit-custom.css";
 import { useNavigate } from "react-router-dom";
 
 function WalletButton() {
-  const navigate = useNavigate();
-  const wallet = useWallet();
-
-  useEffect(() => {
-    if (wallet.status === "connected") {
-      navigate("/game");
-    }
-  }, [wallet.connected]);
+  // const navigate = useNavigate();
+  // const wallet = useWallet();
+  //
+  // useEffect(() => {
+  //   if (wallet.status === "connected") {
+  //     navigate("/game");
+  //   }
+  // }, [wallet.connected]);
 
   return (
     <ConnectButton
