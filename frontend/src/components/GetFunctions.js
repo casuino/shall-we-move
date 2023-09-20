@@ -6,7 +6,7 @@ const socket = new WebSocket(
 );
 
 export async function getObject(object_id) {
-  const response = await axios.post(config.TESTNET_ENDPOINT, {
+  const response = await axios.post(config.SUI_FULLNODE_DEVNET_ENDPOINT, {
     jsonrpc: "2.0",
     id: 1,
     method: "sui_getObject",
@@ -28,7 +28,7 @@ export async function getObject(object_id) {
 }
 
 export async function getMultiObjects(object_id_array) {
-  const response = await axios.post(config.TESTNET_ENDPOINT, {
+  const response = await axios.post(config.SUI_FULLNODE_DEVNET_ENDPOINT, {
     jsonrpc: "2.0",
     id: 1,
     method: "sui_multiGetObjects",
@@ -110,7 +110,7 @@ export async function fetchGameTableObject(
         socket.send(
           JSON.stringify({
             flag: "Fill Cards",
-            packageObjectId: config.PACKAGE_OBJECT_ID,
+            packageObjectId: config.PACKAGE_ID_DEVNET,
             gameTableObjectId: gameTableObjectId,
             playerAddress: player_hand.account,
           })
@@ -148,7 +148,7 @@ export async function fetchGameTableObject(
 
 // game table id 전부 가져오기
 export async function getAllGames() {
-  const response = await getMultiObjects(config.GAME_TABLES);
+  const response = await getMultiObjects(config.GAME_TABLES_DEVNET);
   console.log("All Game Response: ", response);
   return response;
 }

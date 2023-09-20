@@ -1,16 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Typography, Box, TextField, Button } from "@mui/material";
-import { useWallet } from "@suiet/wallet-kit";
-import { JsonRpcProvider, Connection } from "@mysten/sui.js";
 
 const BettingAmount = ({
   setBettingAmount,
   error,
-  setError,
   handleStartButtonClick,
   bettingAmount,
-  balance,
-  setBalance,
 }) => {
   const handleChange = (e) => {
     setBettingAmount(e.target.value);
