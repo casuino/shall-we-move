@@ -68,6 +68,7 @@ const Exchange = () => {
           minWidth: "650px",
           borderRadius: "30px",
           boxShadow: 6,
+          backgroundColor: "brown",
         }}
       >
         <Box sx={{ width: "70%" }}>
@@ -80,12 +81,12 @@ const Exchange = () => {
             aria-label="full width tabs example"
           >
             <Tab
-              label="Buy"
+              label="Stake"
               {...a11yProps(0)}
               sx={{ fontSize: 24, fontWeight: "bold" }}
             />
             <Tab
-              label="Sell"
+              label="Unstake"
               {...a11yProps(1)}
               sx={{ fontSize: 24, fontWeight: "bold" }}
             />
