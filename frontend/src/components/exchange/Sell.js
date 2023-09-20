@@ -33,7 +33,7 @@ const Sell = () => {
       <Box
         sx={{
           position: "relative",
-          backgroundColor: "#27293D",
+          // backgroundColor: "#27293D",
           borderRadius: "30px",
           width: "100%",
           height: "30%",
@@ -129,7 +129,7 @@ const Sell = () => {
       <Box
         sx={{
           position: "relative",
-          backgroundColor: "#27293D",
+          // backgroundColor: "#27293D",
           borderRadius: "30px",
           width: "100%",
           height: "30%",
