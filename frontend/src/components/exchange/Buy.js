@@ -3,9 +3,12 @@ import { Box, Button, Typography, TextField } from "@mui/material";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import sui from "../../images/coins/sui.png";
 import suiCoin from "../../images/coins/suicoin.png";
+import {depositSui} from "../../transactions/exchangeTx.ts";
+import {useWallet} from "@suiet/wallet-kit";
 
 const Buy = () => {
   const [number, setNumber] = useState(0);
+const wallet = useWallet();
 
   const handleInputChange = (event) => {
     const inputValue = event.target.value;
@@ -182,6 +185,7 @@ const Buy = () => {
         </Box>
       </Box>
       <Button
+          onClick={() => depositSui(number, wallet)}
         variant="contained"
         color="secondary"
         sx={{ width: "100%", height: "15%", fontSize: 16, fontWeight: "bold" }}

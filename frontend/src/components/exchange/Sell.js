@@ -1,11 +1,15 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import sui from "../../images/coins/sui.png";
 import suiCoin from "../../images/coins/suicoin.png";
+import {withdrawStakedSui} from "../../transactions/exchangeTx.ts";
+import {useWallet} from "@suiet/wallet-kit";
 
 const Sell = () => {
   const [number, setNumber] = useState(0);
+
+  const wallet = useWallet();
 
   const handleInputChange = (event) => {
     const inputValue = event.target.value;
@@ -182,6 +186,7 @@ const Sell = () => {
         </Box>
       </Box>
       <Button
+        // onClick={() => withdrawStakedSui(1, wallet)}
         variant="contained"
         color="secondary"
         sx={{ width: "100%", height: "15%", fontSize: 16, fontWeight: "bold" }}

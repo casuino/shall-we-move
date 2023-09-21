@@ -15,7 +15,8 @@ import buttonSound from "../images/button_sound.mp3";
 import useSound from "use-sound";
 
 import { useWallet } from "@suiet/wallet-kit";
-import { JsonRpcProvider, Connection } from "@mysten/sui.js";
+import { SuiClient } from "@mysten/sui.js/client";
+import config from "../config.json";
 
 const Game = () => {
   const [playButtonSound] = useSound(buttonSound);
@@ -49,16 +50,13 @@ const Game = () => {
 
   useEffect(() => {
     fetchAllGameTables(setAllGameTables);
-
-    // Construct your connection:
-    const connection = new Connection({
-      fullnode: "https://sui-testnet.nodeinfra.com",
-    });
     // connect to a custom RPC server
-    const provider = new JsonRpcProvider(connection);
+    const suiClient = new SuiClient({
+      url: config.SUI_FULLNODE_DEVNET_ENDPOINT,
+    });
 
     async function getAllCoins() {
-      const allCoins = await provider.getAllCoins({
+      const allCoins = await suiClient.getAllCoins({
         owner: wallet.account.address,
       });
 
@@ -67,14 +65,14 @@ const Game = () => {
     }
 
     getAllCoins().catch(console.error);
-  }, []);
+  }, [loading]);
 
   useEffect(() => {
     if (bettingAmount !== "") {
       if (isNaN(bettingAmount) || bettingAmount <= 0) {
         setError("Please input a valid number");
       } else if (bettingAmount > balance / 1000000000) {
-        setError("Insufficient wallet balance");
+        setError(`Insufficient wallet balance`);
       } else {
         setError(false);
       }

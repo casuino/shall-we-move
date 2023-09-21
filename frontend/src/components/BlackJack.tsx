@@ -10,7 +10,7 @@ import {
 import BackgroundImage from "../images/background.jpg";
 import config from "../config.json";
 import { useWallet } from "@suiet/wallet-kit";
-import { TransactionBlock } from "@mysten/sui.js";
+import { TransactionBlock } from "@mysten/sui.js/transactions";
 import GameTableInfo from "./GameTableInfo";
 import { SuiSignAndExecuteTransactionBlockInput } from "@mysten/wallet-standard";
 import CardDeck from "./CardDeck";
@@ -135,13 +135,13 @@ const BlackJack = ({
     );
     const [coin] = tx.splitCoins(tx.gas, [tx.pure(bettingAmount_mist)]);
     tx.setGasBudget(30000000);
-    const package_id = config.PACKAGE_OBJECT_ID;
+    const package_id = config.PACKAGE_ID_DEVNET;
     const module = "blackjack";
     const function_name = "ready_game";
     tx.moveCall({
       target: `${package_id}::${module}::${function_name}`,
       arguments: [
-        tx.object(config.GAME_INFO_OBJECT_ID),
+        tx.object(config.GAME_INFO_OBJECT_ID_DEVNET),
         tx.object(gameTableObjectId),
         coin,
       ],
@@ -164,13 +164,13 @@ const BlackJack = ({
   const cancelReadyGame = async () => {
     const tx = new TransactionBlock();
     tx.setGasBudget(30000000);
-    const package_id = config.PACKAGE_OBJECT_ID;
+    const package_id = config.PACKAGE_ID_DEVNET;
     const module = "blackjack";
     const function_name = "cancel_ready_game";
     tx.moveCall({
       target: `${package_id}::${module}::${function_name}`,
       arguments: [
-        tx.object(config.GAME_INFO_OBJECT_ID),
+        tx.object(config.GAME_INFO_OBJECT_ID_DEVNET),
         tx.object(gameTableObjectId),
       ],
     });
@@ -221,7 +221,7 @@ const BlackJack = ({
       socket.send(
         JSON.stringify({
           flag: "Start Game",
-          packageObjectId: config.PACKAGE_OBJECT_ID,
+          packageObjectId: config.PACKAGE_ID_DEVNET,
           gameTableObjectId: gameTableObjectId,
           playerAddress: wallet.address,
           bettingAmount: bettingAmount,
@@ -238,7 +238,7 @@ const BlackJack = ({
       socket.send(
         JSON.stringify({
           flag: "Go Card",
-          packageObjectId: config.PACKAGE_OBJECT_ID,
+          packageObjectId: config.PACKAGE_ID_DEVNET,
           gameTableObjectId: gameTableObjectId,
           playerAddress: wallet.address,
         })
@@ -254,7 +254,7 @@ const BlackJack = ({
       socket.send(
         JSON.stringify({
           flag: "End Game (Stand)",
-          packageObjectId: config.PACKAGE_OBJECT_ID,
+          packageObjectId: config.PACKAGE_ID_DEVNET,
           gameTableObjectId: gameTableObjectId,
           playerAddress: wallet.address,
         })
@@ -270,7 +270,7 @@ const BlackJack = ({
       socket.send(
         JSON.stringify({
           flag: "Settle Up Game",
-          packageObjectId: config.PACKAGE_OBJECT_ID,
+          packageObjectId: config.PACKAGE_ID_DEVNET,
           gameTableObjectId: gameTableObjectId,
           playerAddress: wallet.address,
         })
@@ -285,7 +285,7 @@ const BlackJack = ({
     socket.send(
       JSON.stringify({
         flag: "Fill Cards",
-        packageObjectId: config.PACKAGE_OBJECT_ID,
+        packageObjectId: config.PACKAGE_ID_DEVNET,
         gameTableObjectId: gameTableObjectId,
         playerAddress: wallet.address,
       })
@@ -438,7 +438,7 @@ const BlackJack = ({
         )}
 
         {loading == false &&
-        config.DEALER_ADDRESSES.includes(wallet.address!) ? (
+        config.DEALER_ADDRESSES_DEVNET.includes(wallet.address!) ? (
           <Button
             variant="contained"
             color="secondary"
