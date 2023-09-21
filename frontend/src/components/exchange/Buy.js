@@ -30,6 +30,7 @@ const Buy = () => {
         sx={{
           position: "relative",
           // backgroundColor: "#27293D",
+          backgroundColor: "black",
           borderRadius: "30px",
           width: "100%",
           height: "30%",
@@ -126,6 +127,7 @@ const Buy = () => {
         sx={{
           position: "relative",
           // backgroundColor: "#27293D",
+          backgroundColor: "black",
           borderRadius: "30px",
           width: "100%",
           height: "30%",
