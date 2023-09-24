@@ -3,8 +3,7 @@ import dotenv from "dotenv";
 import fs from "fs";
 import https from "https";
 import {
-  getProvider,
-  getSigner,
+  getKeypair,
   startGame,
   endGame,
   goCard,
@@ -18,8 +17,7 @@ const server = https.createServer({
   key: fs.readFileSync(process.env.HTTPS_KEY_PATH!), // 개인키 경로
 });
 
-const provider = getProvider(process.env.RPC_URL!);
-const dealer_signer = getSigner(process.env.DEALER_PRIVATE_KEY!, provider);
+const dealer_signer = getKeypair(process.env.DEALER_PRIVATE_KEY!);
 
 const wss = new WebSocketServer({ server });
 const clients: Set<WebSocket> = new Set();

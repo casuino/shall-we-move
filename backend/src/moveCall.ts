@@ -1,14 +1,10 @@
-import {
-  JsonRpcProvider,
-  Connection,
-  Ed25519Keypair,
-  fromB64,
-  RawSigner,
-  SIGNATURE_SCHEME_TO_FLAG,
-  PRIVATE_KEY_SIZE,
-  TransactionBlock,
-} from "@mysten/sui.js";
+import {SuiClient, getFullnodeUrl} from "@mysten/sui.js/client";
+import { TransactionBlock } from "@mysten/sui.js/transactions";
+import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519';
+import { fromB64 } from '@mysten/sui.js/utils';
 import dotenv from "dotenv";
+import {CUR_NETWORK} from "./const/_const";
+import {splitMyChip} from "./chip";
 
 dotenv.config();
 
@@ -23,6 +19,10 @@ const END_GAME_FN_NAME = "end_game";
 const SETTLE_UP_GAME_FN_NAME = "settle_up_game";
 const FILL_CARD_DECK_FN_NAME = "fill_10_cards_to_card_deck";
 
+const suiClient = new SuiClient({
+    url: getFullnodeUrl(CUR_NETWORK),
+});
+
 export interface ITxResponse {
     flag: string;
     digest: string;
@@ -32,35 +32,16 @@ export interface ITxResponse {
     transaction: any;
 }
 
-export const getProvider = (
-  fullnode: string,
-  faucet?: string
-): JsonRpcProvider => {
-  const connection = new Connection({
-    fullnode,
-    faucet,
-  });
-  return new JsonRpcProvider(connection);
-};
-
-export const getSigner = (
+export const getKeypair = (
   privateKey: string,
-  provider: JsonRpcProvider
-): RawSigner => {
+): Ed25519Keypair => {
   const raw = fromB64(privateKey);
-  if (
-    raw[0] !== SIGNATURE_SCHEME_TO_FLAG.ED25519 ||
-    raw.length !== PRIVATE_KEY_SIZE + 1
-  ) {
-    throw new Error("invalid key");
-  }
-
   const keypair = Ed25519Keypair.fromSecretKey(raw.slice(1));
-  return new RawSigner(keypair, provider);
+  return keypair;
 };
 
 export const startGame = async (
-  signer: RawSigner,
+  signer: Ed25519Keypair,
   player_address: string,
   betting_amount: string,
   package_id: string,
@@ -70,23 +51,34 @@ export const startGame = async (
   const bettingAmount_mist = Math.floor(
     parseFloat(betting_amount) * MIST_PER_SUI
   );
-  const [coin] = tx.splitCoins(tx.gas, [tx.pure(bettingAmount_mist)]);
+
+  const chip = await splitMyChip(tx, bettingAmount_mist, signer.getPublicKey().toSuiAddress());
+
+  if (chip === null) {
+    throw new Error("[moveCall.ts:startGame] Dealer doesn't have enough chips");
+  }
+  console.log("My CHip:", chip);
   tx.setGasBudget(GAS_BUDGET);
 
   tx.moveCall({
     target: `${package_id}::${MODULE_NAME}::${START_GAME_FN_NAME}`,
-    arguments: [tx.object(game_table_id), coin, tx.pure(player_address)],
+    arguments: [
+      tx.object(game_table_id),
+      chip,
+      tx.pure(player_address)],
   });
 
-  const result = await signer.signAndExecuteTransactionBlock({
+  const result = await suiClient.signAndExecuteTransactionBlock({
+    signer: signer,
     transactionBlock: tx,
     options: {
-      showEffects: true,
-      showEvents: true,
-      showObjectChanges: true,
-      showInput: true,
-    },
-  });
+        showEffects: true,
+        showEvents: true,
+        showObjectChanges: true,
+        showInput: true,
+    }
+  })
+  console.log("Start Game Result:", result);
 
   const data: ITxResponse = {
     flag: "start game done",
@@ -125,7 +117,7 @@ export const getRandomNumbers = (): string[] => {
 };
 
 export const fillCardDeck = async (
-  signer: RawSigner,
+  signer: Ed25519Keypair,
   package_id: string,
   game_table_id: string,
 ): Promise<ITxResponse> => {
@@ -149,15 +141,17 @@ export const fillCardDeck = async (
       tx.pure(parseInt(shuffle_cards[9])),
     ],
   });
-  const result = await signer.signAndExecuteTransactionBlock({
+
+  const result = await suiClient.signAndExecuteTransactionBlock({
+    signer: signer,
     transactionBlock: tx,
     options: {
       showEffects: true,
       showEvents: true,
       showObjectChanges: true,
       showInput: true,
-    },
-  });
+    }
+  })
 
   const data = {
     flag: "fill card done",
@@ -171,7 +165,7 @@ export const fillCardDeck = async (
 };
 
 export const goCard = async (
-  signer: RawSigner,
+  signer: Ed25519Keypair,
   package_id: string,
   game_table_id: string,
   player_address: string,
@@ -183,15 +177,16 @@ export const goCard = async (
     arguments: [tx.object(game_table_id), tx.pure(player_address)],
   });
 
-  const result = await signer.signAndExecuteTransactionBlock({
+  const result = await suiClient.signAndExecuteTransactionBlock({
+    signer: signer,
     transactionBlock: tx,
     options: {
       showEffects: true,
       showEvents: true,
       showObjectChanges: true,
       showInput: true,
-    },
-  });
+    }
+  })
 
   const data = {
     flag: "get card done",
@@ -206,7 +201,7 @@ export const goCard = async (
 };
 
 export const endGame = async (
-  signer: RawSigner,
+  signer: Ed25519Keypair,
   package_id: string,
   game_table_id: string,
 ): Promise<ITxResponse> => {
@@ -218,15 +213,16 @@ export const endGame = async (
     arguments: [tx.object(game_table_id)],
   });
 
-  const result = await signer.signAndExecuteTransactionBlock({
+  const result = await suiClient.signAndExecuteTransactionBlock({
+    signer: signer,
     transactionBlock: tx,
     options: {
       showEffects: true,
       showEvents: true,
       showObjectChanges: true,
       showInput: true,
-    },
-  });
+    }
+  })
 
   const data = {
     flag: "end game (stand) done",
@@ -240,7 +236,7 @@ export const endGame = async (
 };
 
 export const settleUpGame = async (
-  signer: RawSigner,
+  signer: Ed25519Keypair,
   package_id: string,
   game_table_id: string,
 ): Promise<ITxResponse> => {
@@ -251,15 +247,17 @@ export const settleUpGame = async (
     // arguments: [tx.object(game_table_id), tx.pure(1)],
     arguments: [tx.object(game_table_id)],
   });
-  const result = await signer.signAndExecuteTransactionBlock({
+
+  const result = await suiClient.signAndExecuteTransactionBlock({
+    signer: signer,
     transactionBlock: tx,
     options: {
       showEffects: true,
       showEvents: true,
       showObjectChanges: true,
       showInput: true,
-    },
-  });
+    }
+  })
 
   const data = {
     flag: "settle up game done",

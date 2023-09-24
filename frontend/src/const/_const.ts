@@ -2,9 +2,11 @@
 export const GAS_BUDGET = 30000000;
 export const TESTNET_ENDPOINT = "https://sui-testnet.nodeinfra.com";
 export const SUI_FULLNODE_DEVNET_ENDPOINT = "https://fullnode.devnet.sui.io";
-export const PACKAGE_ID_DEVNET = "0x042f788250dfdd02e110d47719d8892fd54712c069fce25686eb380b3c53d2a4";
-export const GAME_INFO_OBJECT_ID_DEVNET = "0xf24e8e6f87697ae8fdc60ee431e7d220cdf5fe52b29c0f8bab727b554c7e4ebf";
-export const EXCHANGE_OBEJCT_ID_DEVNET = "0x2095ca06e87d0492a0a2be4c37bb7c73fa9b79fb0e411644dbe0016350f8ed1c";
+export const PACKAGE_ID_DEVNET = "0xa6fc7643b4c04151b44d058faa3f00cff23cd93d0e88165072fe44be20eb193d";
+export const GAME_INFO_OBJECT_ID_DEVNET = "0xa0607764ede60eadab43d79d13dab90f7e221ab26abe85b1ee3d50a1193f0a16";
+export const EXCHANGE_OBEJCT_ID_DEVNET = "0xec40953d9922e2d4dcdfc2a5c9b88fdf65bcd3aa6d43995da7a48e887e97d4a7";
+export const SUI_SYSTEM_STATE_OBJECT_ID = "0x0000000000000000000000000000000000000000000000000000000000000005";
+export const VALIDATOR_ADDR_DEVNET = "0x8c507e31b85e2b0f5d67b6335fd44413cce9afe1d53b08ede7595e91dd61beaa";
 
 export const GAME_TABLES = [
     "0x6e83b5e1c7d0923e203ab3b6d2001ce8a62624b47f7546ae5815bbf273926a9a",
@@ -21,10 +23,9 @@ export const GAME_TABLES = [
     "0x8a86fdc93ec716fb4a788d79b030a6a754f0c75260349e085e67ebd739e3c43f"
 ];
 export const GAME_TABLES_DEVNET = [
-    "0x8984426dd0118b8851006c7308d0c90990c556b6d7391b5bfbbf7e5a218c040d",
-    "0x1bb7870dfb86d4a86d946260303622f8b7cb56351baccce0be3affebb5b8866c",
-    "0xfb5dcfc3cb622f563c1d935a605b6b4205d45c8aa4b9247c5743f981eee80d14",
-    "0xc51db6c0b26c491156f67afbcf09128d2a3b78a446745d1053fc73de0994c5c1"
+    "0x74dbe80bfb533ffff92e81f9966a20f10f24e55e6b50e8950c1a741cc1328f25",
+    "0x013fcd7709ab001b98aa046349a9e77db14851776f38a3617db2937a6db25f93",
+    "0x14d29e0cfa054dbf6b5d64b78a0b671ff21aeb72cafab5171a70a594da9cddf3"
 ];
 
 export const CARD_NUMS = ["king", "ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen"];
