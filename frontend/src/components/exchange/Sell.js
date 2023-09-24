@@ -5,8 +5,9 @@ import sui from "../../images/coins/sui.png";
 import suiCoin from "../../images/coins/suicoin.png";
 import {withdrawSui} from "../../transactions/exchangeTx.ts";
 import {useWallet} from "@suiet/wallet-kit";
+import {toast} from "react-toastify";
 
-const Sell = () => {
+const Sell = ({setLoading}) => {
   const [number, setNumber] = useState(0);
 
   const wallet = useWallet();
@@ -17,6 +18,13 @@ const Sell = () => {
       setNumber(inputValue);
     }
   };
+
+  const handleWithdraw = async (amount, wallet) => {
+    setLoading(true);
+    await withdrawSui(amount, wallet);
+    toast("Successfully unstake your SUI!!", { autoClose: 2000 });
+    setLoading(false);
+  }
 
   return (
     <Box
@@ -184,7 +192,7 @@ const Sell = () => {
         </Box>
       </Box>
       <Button
-        onClick={() => withdrawSui(number, wallet)}
+        onClick={() => handleWithdraw(number, wallet)}
         variant="contained"
         color="secondary"
         sx={{ width: "100%", height: "15%", fontSize: 16, fontWeight: "bold" }}

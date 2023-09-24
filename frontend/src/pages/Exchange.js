@@ -1,10 +1,11 @@
 import React from "react";
 import { PropTypes } from "prop-types";
-import { Box, Grid, Tab, Tabs, Typography, Button } from "@mui/material";
+import {Box, Grid, Tab, Tabs, Typography, Button, CircularProgress} from "@mui/material";
 import Buy from "../components/exchange/Buy";
 import Sell from "../components/exchange/Sell";
 import { Info } from "../components/exchange/Info";
 import cashierBackground from "../images/cashier.png";
+import {ToastContainer} from "react-toastify";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -37,6 +38,7 @@ function a11yProps(index) {
 
 const Exchange = () => {
   const [value, setValue] = React.useState(0);
+  const [loading, setLoading] = React.useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -56,6 +58,32 @@ const Exchange = () => {
         backgroundRepeat: "no-repeat",
       }}
     >
+        {/*loading component*/}
+        {loading && (
+            <Box
+                sx={{
+                    position: "fixed",
+                    top: "60%",
+                    left: "50%",
+                    width: "100px",
+                    height: "100px",
+                    transform: "translate(-50%, -50%)",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+            >
+                <CircularProgress color="secondary" />
+            </Box>
+        )}
+
+        {/*The toast container - toastify*/}
+        <ToastContainer
+            position="top-center"
+            newestOnTop
+            pauseOnFocusLoss={false}
+        />
+
       {/* <Info /> */}
       <Box
         sx={{
@@ -92,10 +120,10 @@ const Exchange = () => {
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
-          <Buy />
+          <Buy setLoading={setLoading} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-          <Sell />
+          <Sell setLoading={setLoading} />
         </CustomTabPanel>
       </Box>
     </Box>

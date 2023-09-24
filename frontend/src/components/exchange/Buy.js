@@ -5,10 +5,11 @@ import sui from "../../images/coins/sui.png";
 import suiCoin from "../../images/coins/suicoin.png";
 import {depositSui} from "../../transactions/exchangeTx.ts";
 import {useWallet} from "@suiet/wallet-kit";
+import {toast} from "react-toastify";
 
-const Buy = () => {
+const Buy = ({setLoading}) => {
   const [number, setNumber] = useState(0);
-const wallet = useWallet();
+  const wallet = useWallet();
 
   const handleInputChange = (event) => {
     const inputValue = event.target.value;
@@ -16,6 +17,13 @@ const wallet = useWallet();
       setNumber(inputValue);
     }
   };
+
+  const handleDeposit = async (amount, wallet) => {
+    setLoading(true);
+    await depositSui(amount, wallet);
+    toast("Successfully stake your SUI!!", { autoClose: 2000 });
+    setLoading(false);
+  }
 
   return (
     <Box
@@ -183,7 +191,7 @@ const wallet = useWallet();
         </Box>
       </Box>
       <Button
-          onClick={() => depositSui(number, wallet)}
+          onClick={() => handleDeposit(number, wallet)}
         variant="contained"
         color="secondary"
         sx={{ width: "100%", height: "15%", fontSize: 16, fontWeight: "bold" }}
