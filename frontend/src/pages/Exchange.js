@@ -1,10 +1,19 @@
 import React from "react";
 import { PropTypes } from "prop-types";
-import { Box, Grid, Tab, Tabs, Typography, Button } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Tab,
+  Tabs,
+  Typography,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 import Buy from "../components/exchange/Buy";
 import Sell from "../components/exchange/Sell";
 import { Info } from "../components/exchange/Info";
-import cashierBackground from "../images/cashier.png";
+import exchangeBackground from "../images/exchangeBackground.png";
+import { ToastContainer } from "react-toastify";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -37,6 +46,7 @@ function a11yProps(index) {
 
 const Exchange = () => {
   const [value, setValue] = React.useState(0);
+  const [loading, setLoading] = React.useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -52,10 +62,36 @@ const Exchange = () => {
         backgroundSize: "cover",
         backgroundPosition: "center",
         flexWrap: "wrap",
-        backgroundImage: `url(${cashierBackground})`,
+        backgroundImage: `url(${exchangeBackground})`,
         backgroundRepeat: "no-repeat",
       }}
     >
+      {/*loading component*/}
+      {loading && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: "60%",
+            left: "50%",
+            width: "100px",
+            height: "100px",
+            transform: "translate(-50%, -50%)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <CircularProgress color="secondary" />
+        </Box>
+      )}
+
+      {/*The toast container - toastify*/}
+      <ToastContainer
+        position="top-center"
+        newestOnTop
+        pauseOnFocusLoss={false}
+      />
+
       {/* <Info /> */}
       <Box
         sx={{
@@ -68,7 +104,9 @@ const Exchange = () => {
           minWidth: "650px",
           borderRadius: "30px",
           boxShadow: 6,
-          backgroundColor: "brown",
+          border: "2px solid black",
+          backdropFilter: "blur(6px)",
+          marginLeft: 50,
         }}
       >
         <Box sx={{ width: "70%" }}>
@@ -81,22 +119,22 @@ const Exchange = () => {
             aria-label="full width tabs example"
           >
             <Tab
-              label="Stake"
+              label="Buy"
               {...a11yProps(0)}
               sx={{ fontSize: 24, fontWeight: "bold" }}
             />
             <Tab
-              label="Unstake"
+              label="Sell"
               {...a11yProps(1)}
               sx={{ fontSize: 24, fontWeight: "bold" }}
             />
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
-          <Buy />
+          <Buy setLoading={setLoading} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-          <Sell />
+          <Sell setLoading={setLoading} />
         </CustomTabPanel>
       </Box>
     </Box>

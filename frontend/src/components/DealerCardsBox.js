@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 import card from "../images/cards/card.png";
 import Card from "./Card";
-import config from "../config.json";
+import {CARD_NUMS, CARD_TYPES} from "../const/_const";
 
 const DealerCardsBox = ({ dealerHandData, isPlaying }) => {
   // console.log(dealerHandData.cards);
@@ -27,15 +27,15 @@ const DealerCardsBox = ({ dealerHandData, isPlaying }) => {
             key={i}
             index={i}
             open={true}
-            type={config.CARD_TYPES[Math.floor(c.card_number / 13)]}
-            num={config.CARD_NUMS[c.card_number % 13]}
+            type={CARD_TYPES[Math.floor(c.card_number / 13)]}
+            num={CARD_NUMS[c.card_number % 13]}
           />
         ) : (
           <Card
             key={i}
             index={i}
-            type={config.CARD_TYPES[Math.floor(c.card_number / 13)]}
-            num={config.CARD_NUMS[c.card_number % 13]}
+            type={CARD_TYPES[Math.floor(c.card_number / 13)]}
+            num={CARD_NUMS[c.card_number % 13]}
           />
         )
       )}

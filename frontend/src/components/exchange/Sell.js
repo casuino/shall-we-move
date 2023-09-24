@@ -1,21 +1,32 @@
-import React, {useEffect, useState} from "react";
+import React, { useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import sui from "../../images/coins/sui.png";
 import suiCoin from "../../images/coins/suicoin.png";
-import {withdrawStakedSui} from "../../transactions/exchangeTx.ts";
-import {useWallet} from "@suiet/wallet-kit";
+import { withdrawSui } from "../../transactions/exchangeTx.ts";
+import { useWallet } from "@suiet/wallet-kit";
+import { toast } from "react-toastify";
 
-const Sell = () => {
+const Sell = ({ setLoading }) => {
   const [number, setNumber] = useState(0);
+  const [exchangeNumber, setExchangeNumber] = useState(0);
 
   const wallet = useWallet();
 
   const handleInputChange = (event) => {
     const inputValue = event.target.value;
     if (!isNaN(inputValue) && inputValue.length <= 7) {
+      const formattedNumber = inputValue ? inputValue * 0.8 : undefined;
       setNumber(inputValue);
+      setExchangeNumber(formattedNumber);
     }
+  };
+
+  const handleWithdraw = async (amount, wallet) => {
+    setLoading(true);
+    await withdrawSui(amount, wallet);
+    toast("Successfully unstake your SUI!!", { autoClose: 2000 });
+    setLoading(false);
   };
 
   return (
@@ -34,7 +45,7 @@ const Sell = () => {
         sx={{
           position: "relative",
           // backgroundColor: "#27293D",
-          backgroundColor: "black",
+          border: "1px solid white",
           borderRadius: "30px",
           width: "100%",
           height: "30%",
@@ -121,7 +132,7 @@ const Sell = () => {
               marginRight: 2,
             }}
           />
-          <Typography sx={{ fontSize: 18 }}>SUICOIN</Typography>
+          <Typography sx={{ fontSize: 18 }}>CHIPSUI</Typography>
         </Box>
       </Box>
       <Box sx={{ marginBottom: 4 }}>
@@ -131,7 +142,7 @@ const Sell = () => {
         sx={{
           position: "relative",
           // backgroundColor: "#27293D",
-          backgroundColor: "black",
+          border: "1px solid white",
           borderRadius: "30px",
           width: "100%",
           height: "30%",
@@ -159,7 +170,9 @@ const Sell = () => {
           }}
         >
           <Typography sx={{ color: "grey", fontWeight: "bold" }}>To</Typography>
-          <Box sx={{ fontSize: 36, maxWidth: 200 }}>{number}</Box>
+          <Box sx={{ fontSize: 36, maxWidth: 200 }}>
+            {exchangeNumber ? Math.round(exchangeNumber * 10000) / 10000 : 0}
+          </Box>
         </Box>
         <Box
           sx={{
@@ -186,7 +199,7 @@ const Sell = () => {
         </Box>
       </Box>
       <Button
-        // onClick={() => withdrawStakedSui(1, wallet)}
+        onClick={() => handleWithdraw(number, wallet)}
         variant="contained"
         color="secondary"
         sx={{ width: "100%", height: "15%", fontSize: 16, fontWeight: "bold" }}
