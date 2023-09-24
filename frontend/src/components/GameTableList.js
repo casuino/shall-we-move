@@ -1,5 +1,4 @@
 import { Box, Grid, Typography } from "@mui/material";
-import config from "../config.json";
 import card from "../images/cards/card.png";
 import { useEffect, useState } from "react";
 import { useWallet } from "@suiet/wallet-kit";

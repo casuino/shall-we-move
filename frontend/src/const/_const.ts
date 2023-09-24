@@ -1,12 +1,12 @@
-{
-  "TESTNET_ENDPOINT": "https://sui-testnet.nodeinfra.com",
-  "SUI_FULLNODE_DEVNET_ENDPOINT": "https://fullnode.devnet.sui.io",
 
-  "PACKAGE_ID_DEVNET": "0x1c4e510e5790fe8df0402104012fed60666659a9506590025c25515faf9baa28",
-  "GAME_INFO_OBJECT_ID_DEVNET" : "0x78694094328384d92908115d4b2ccfbe762bd9c6a1980c3d565c6fa210db45e4",
-  "EXCHANGE_OBEJCT_ID_DEVNET": "0xa7cb46d75c2a2cbd82a1f002597d66a13a44f065f44317fffa75a3e9ae367846",
+export const GAS_BUDGET = 30000000;
+export const TESTNET_ENDPOINT = "https://sui-testnet.nodeinfra.com";
+export const SUI_FULLNODE_DEVNET_ENDPOINT = "https://fullnode.devnet.sui.io";
+export const PACKAGE_ID_DEVNET = "0x042f788250dfdd02e110d47719d8892fd54712c069fce25686eb380b3c53d2a4";
+export const GAME_INFO_OBJECT_ID_DEVNET = "0xf24e8e6f87697ae8fdc60ee431e7d220cdf5fe52b29c0f8bab727b554c7e4ebf";
+export const EXCHANGE_OBEJCT_ID_DEVNET = "0x2095ca06e87d0492a0a2be4c37bb7c73fa9b79fb0e411644dbe0016350f8ed1c";
 
-  "GAME_TABLES": [
+export const GAME_TABLES = [
     "0x6e83b5e1c7d0923e203ab3b6d2001ce8a62624b47f7546ae5815bbf273926a9a",
     "0x553339fc9ef1f73584d55edfe0e28067f75e1de3daa7217466de6702f243822c",
     "0x26cea8ecdbb124cd02abca9fc421f574263f2dcaa00aacb0e57efe4ef83f1a46",
@@ -19,25 +19,24 @@
     "0x975e7bef0be6e538926bd08470d3611ec5c1de43a2951d88f888a6739f579b60",
     "0x7e95f35f2e634085b2d2861ee6c0c4028201c9d561dd4f87976ffc3ecde907ba",
     "0x8a86fdc93ec716fb4a788d79b030a6a754f0c75260349e085e67ebd739e3c43f"
-  ],
-  "GAME_TABLES_DEVNET": [
-    "0x0e1ea305a6583d7147195ea672828fe2fdae8c88e8b144fa279520d468c041c7",
-    "0x45340e7fffe20358c052300b36154883701ec6d22cef5ad053dd4cce69d500f2",
-    "0x7ecc1d1d2e016ae28be56647a0370a3cf201924fffb7f3c11792e7cfbdb6dfdb",
-    "0xeb830416c68cf3ffcbbaa8a77a155fd341902123dd0c9eab8a483ad7c9cedd90"
-  ],
+];
+export const GAME_TABLES_DEVNET = [
+    "0x8984426dd0118b8851006c7308d0c90990c556b6d7391b5bfbbf7e5a218c040d",
+    "0x1bb7870dfb86d4a86d946260303622f8b7cb56351baccce0be3affebb5b8866c",
+    "0xfb5dcfc3cb622f563c1d935a605b6b4205d45c8aa4b9247c5743f981eee80d14",
+    "0xc51db6c0b26c491156f67afbcf09128d2a3b78a446745d1053fc73de0994c5c1"
+];
 
-  "CARD_NUMS": ["king", "ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen"],
-  "REAL_NUMS": [10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10],
-  "CARD_TYPES": ["heart", "spade", "diamond", "clover"],
+export const CARD_NUMS = ["king", "ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen"];
+export const  REAL_NUMS = [10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10];
+export const CARD_TYPES = ["heart", "spade", "diamond", "clover"];
 
-  "DEALER_ADDRESSES": [
+export const DEALER_ADDRESSES = [
     "0x3ce7f91f0312dfc57a944afdbbc0549e919ce00abe6d9913a71017453f04db41",
     "0xa2fb876c75ffd1763ff768763e9cff2c289dd8eff2763d32e40a9b32e993d96a",
     "0x4afcb4885346c65394537d38d6b3982c8c5dec04a60aa2cc98144ffddac2e21b",
     "0xf0c2fa2715f5218d3e14c0bd6badbfad50b1830ae60ffa660f27740cc9af7ba7"
-  ],
-  "DEALER_ADDRESSES_DEVNET": [
+];
+export const DEALER_ADDRESSES_DEVNET = [
     "0x6ed4b3b978d857276f412b7259dfee28a7a151292272e0aff979ac1e662a3fe3"
-  ]
-}
+];
