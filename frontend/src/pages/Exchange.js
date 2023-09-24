@@ -105,6 +105,7 @@ const Exchange = () => {
           borderRadius: "30px",
           boxShadow: 6,
           border: "2px solid black",
+          backdropFilter: "blur(6px)",
           marginLeft: 50,
         }}
       >

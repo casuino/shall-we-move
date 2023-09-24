@@ -44,6 +44,7 @@ const Buy = ({ setLoading }) => {
         sx={{
           position: "relative",
           // backgroundColor: "#27293D",
+          border: "1px solid white",
           borderRadius: "30px",
           width: "100%",
           height: "30%",
@@ -140,6 +141,7 @@ const Buy = ({ setLoading }) => {
         sx={{
           position: "relative",
           // backgroundColor: "#27293D",
+          border: "1px solid white",
           borderRadius: "30px",
           width: "100%",
           height: "30%",
