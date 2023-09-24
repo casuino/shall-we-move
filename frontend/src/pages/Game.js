@@ -16,7 +16,8 @@ import useSound from "use-sound";
 
 import { useWallet } from "@suiet/wallet-kit";
 import { SuiClient } from "@mysten/sui.js/client";
-import config from "../config.json";
+import {getMyChipBalance} from "../transactions/exchangeTx.ts";
+import {SUI_FULLNODE_DEVNET_ENDPOINT} from "../const/_const";
 
 const Game = () => {
   const [playButtonSound] = useSound(buttonSound);
@@ -52,26 +53,30 @@ const Game = () => {
     fetchAllGameTables(setAllGameTables);
     // connect to a custom RPC server
     const suiClient = new SuiClient({
-      url: config.SUI_FULLNODE_DEVNET_ENDPOINT,
+      url: SUI_FULLNODE_DEVNET_ENDPOINT,
     });
 
-    async function getAllCoins() {
-      const allCoins = await suiClient.getAllCoins({
-        owner: wallet.account.address,
-      });
+    // async function getAllCoins() {
+    //   const allCoins = await suiClient.getAllCoins({
+    //     owner: wallet.account.address,
+    //   });
+    //
+    //   // console.log("sdk: ", allCoins);
+    //   setBalance(allCoins.data[0].balance);
+    // }
 
-      // console.log("sdk: ", allCoins);
-      setBalance(allCoins.data[0].balance);
-    }
+    getMyChipBalance(wallet).then((balance) => {
+        setBalance(balance);
+    })
 
-    getAllCoins().catch(console.error);
+    // getAllCoins().catch(console.error);
   }, [loading]);
 
   useEffect(() => {
     if (bettingAmount !== "") {
       if (isNaN(bettingAmount) || bettingAmount <= 0) {
         setError("Please input a valid number");
-      } else if (bettingAmount > balance / 1000000000) {
+      } else if (bettingAmount > balance) {
         setError(`Insufficient wallet balance`);
       } else {
         setError(false);

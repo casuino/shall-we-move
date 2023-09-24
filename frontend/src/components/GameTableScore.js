@@ -1,5 +1,5 @@
 import { Box, Chip, Typography } from "@mui/material";
-import config from "../config.json";
+import {CARD_NUMS} from "../const/_const";
 
 const GameTableScore = ({
   isPlaying,
@@ -50,7 +50,7 @@ const GameTableScore = ({
                       <Chip
                         key={i}
                         sx={{ marginRight: "10px", fontWeight: "800" }}
-                        label={config.CARD_NUMS[card.card_number % 13]}
+                        label={CARD_NUMS[card.card_number % 13]}
                       />
                     );
                   } else {
@@ -115,7 +115,7 @@ const GameTableScore = ({
                       <Chip
                         key={i}
                         sx={{ marginRight: "10px", fontWeight: "800" }}
-                        label={config.CARD_NUMS[card.card_number % 13]}
+                        label={CARD_NUMS[card.card_number % 13]}
                       />
                     );
                   } else {

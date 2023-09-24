@@ -8,7 +8,6 @@ import {
   Typography,
 } from "@mui/material";
 import BackgroundImage from "../images/background.jpg";
-import config from "../config.json";
 import { useWallet } from "@suiet/wallet-kit";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import GameTableInfo from "./GameTableInfo";
@@ -21,6 +20,14 @@ import "react-toastify/dist/ReactToastify.css";
 import SideBar from "./SideBar";
 import useSound from "use-sound";
 import GameTableScore from "./GameTableScore";
+import {
+  DEALER_ADDRESSES_DEVNET,
+  GAME_INFO_OBJECT_ID_DEVNET,
+  GAS_BUDGET,
+  PACKAGE_ID_DEVNET,
+  REAL_NUMS
+} from "../const/_const";
+import {getMyChips} from "../transactions/exchangeTx";
 
 // Create a WebSocket connection
 const socket = new WebSocket(
@@ -109,7 +116,7 @@ const BlackJack = ({
         let num = parseInt(playerHandData.cards[i].card_number);
         if (num < 10000) {
           num %= 13;
-          total += config.REAL_NUMS[num];
+          total += REAL_NUMS[num];
         }
       }
       setPlayerTotal(total);
@@ -119,7 +126,7 @@ const BlackJack = ({
         let num = parseInt(dealerHandData.cards[i].card_number);
         if (num < 10000) {
           num %= 13;
-          total += config.REAL_NUMS[num];
+          total += REAL_NUMS[num];
         }
       }
       setDealerTotal(total);
@@ -129,56 +136,87 @@ const BlackJack = ({
   // ----------------------------------------------------------------------------------
   // now this function works!
   const readyGame = async () => {
-    const tx = new TransactionBlock();
+    const txb = new TransactionBlock();
     const bettingAmount_mist = Math.floor(
       parseFloat(bettingAmount) * 1000000000
     );
-    const [coin] = tx.splitCoins(tx.gas, [tx.pure(bettingAmount_mist)]);
-    tx.setGasBudget(30000000);
-    const package_id = config.PACKAGE_ID_DEVNET;
-    const module = "blackjack";
-    const function_name = "ready_game";
-    tx.moveCall({
-      target: `${package_id}::${module}::${function_name}`,
+
+    const myChips = await getMyChips(wallet);
+
+    let chip = null;
+    let balanceSum = 0;
+    const chipIdArr = [];
+    for(let i = 0; i < myChips.length; i++){
+        const chipBalance = parseInt(myChips[i].balance, 10);
+
+        // 1개 chip으로 bettingAmount_mist 만큼을 cover할 수 있는 경우
+        if(chipBalance >= bettingAmount_mist){
+            const [coin] = txb.splitCoins(txb.object(myChips[i].coinObjectId), [txb.pure(bettingAmount_mist)]);
+            chip = coin;
+            break;
+        }
+
+      balanceSum += chipBalance;
+      chipIdArr.push(myChips[i].coinObjectId);
+      // 여러 개 chip 합쳐서 bettingAmount_mist 만큼을 cover할 수 있는 경우
+      if(balanceSum >= bettingAmount_mist){
+        const sourceCoins = [];
+        for(let j = 1; j < chipIdArr.length; j++){
+          sourceCoins.push(txb.object(chipIdArr[j]));
+        }
+        txb.mergeCoins(txb.object(chipIdArr[0]), sourceCoins);
+        const [coin] = txb.splitCoins(txb.object(chipIdArr[0]), [txb.pure(bettingAmount_mist)]);
+        chip = coin;
+        break;
+      }
+    }
+
+    // bettingAmount_mist 만큼을 cover할 수 있는 chip이 없는 경우
+    if(chip === null){
+        toast("Not enough chips", { autoClose: 2000 });
+        return;
+    }
+
+    console.log("Ready Game chip: ", chip);
+    txb.setGasBudget(GAS_BUDGET);
+    txb.moveCall({
+      target: `${PACKAGE_ID_DEVNET}::blackjack::ready_game`,
       arguments: [
-        tx.object(config.GAME_INFO_OBJECT_ID_DEVNET),
-        tx.object(gameTableObjectId),
-        coin,
+        txb.object(GAME_INFO_OBJECT_ID_DEVNET),
+        txb.object(gameTableObjectId),
+        chip,
       ],
     });
 
-    const stx: Omit<SuiSignAndExecuteTransactionBlockInput, "sui:testnet"> = {
-      transactionBlock: tx,
+    const stx: Omit<SuiSignAndExecuteTransactionBlockInput, "sui:devnet"> = {
+      transactionBlock: txb,
       account: wallet.account!,
-      chain: "sui:testnet",
+      chain: "sui:devnet",
     };
 
     try {
       const result = await wallet.signAndExecuteTransactionBlock(stx);
-      console.log(result);
+      console.log("Ready Game: ", result);
     } catch (err) {
-      console.log(err);
+      console.log("Ready Game Error: ",err);
     }
   };
 
   const cancelReadyGame = async () => {
     const tx = new TransactionBlock();
-    tx.setGasBudget(30000000);
-    const package_id = config.PACKAGE_ID_DEVNET;
-    const module = "blackjack";
-    const function_name = "cancel_ready_game";
+    tx.setGasBudget(GAS_BUDGET);
     tx.moveCall({
-      target: `${package_id}::${module}::${function_name}`,
+      target: `${PACKAGE_ID_DEVNET}::blackjack::cancel_ready_game`,
       arguments: [
-        tx.object(config.GAME_INFO_OBJECT_ID_DEVNET),
+        tx.object(GAME_INFO_OBJECT_ID_DEVNET),
         tx.object(gameTableObjectId),
       ],
     });
 
-    const stx: Omit<SuiSignAndExecuteTransactionBlockInput, "sui:testnet"> = {
+    const stx: Omit<SuiSignAndExecuteTransactionBlockInput, "sui:devnet"> = {
       transactionBlock: tx,
       account: wallet.account!,
-      chain: "sui:testnet",
+      chain: "sui:devnet",
     };
 
     try {
@@ -221,7 +259,7 @@ const BlackJack = ({
       socket.send(
         JSON.stringify({
           flag: "Start Game",
-          packageObjectId: config.PACKAGE_ID_DEVNET,
+          packageObjectId: PACKAGE_ID_DEVNET,
           gameTableObjectId: gameTableObjectId,
           playerAddress: wallet.address,
           bettingAmount: bettingAmount,
@@ -238,7 +276,7 @@ const BlackJack = ({
       socket.send(
         JSON.stringify({
           flag: "Go Card",
-          packageObjectId: config.PACKAGE_ID_DEVNET,
+          packageObjectId: PACKAGE_ID_DEVNET,
           gameTableObjectId: gameTableObjectId,
           playerAddress: wallet.address,
         })
@@ -254,7 +292,7 @@ const BlackJack = ({
       socket.send(
         JSON.stringify({
           flag: "End Game (Stand)",
-          packageObjectId: config.PACKAGE_ID_DEVNET,
+          packageObjectId: PACKAGE_ID_DEVNET,
           gameTableObjectId: gameTableObjectId,
           playerAddress: wallet.address,
         })
@@ -270,7 +308,7 @@ const BlackJack = ({
       socket.send(
         JSON.stringify({
           flag: "Settle Up Game",
-          packageObjectId: config.PACKAGE_ID_DEVNET,
+          packageObjectId: PACKAGE_ID_DEVNET,
           gameTableObjectId: gameTableObjectId,
           playerAddress: wallet.address,
         })
@@ -285,7 +323,7 @@ const BlackJack = ({
     socket.send(
       JSON.stringify({
         flag: "Fill Cards",
-        packageObjectId: config.PACKAGE_ID_DEVNET,
+        packageObjectId: PACKAGE_ID_DEVNET,
         gameTableObjectId: gameTableObjectId,
         playerAddress: wallet.address,
       })
@@ -438,7 +476,7 @@ const BlackJack = ({
         )}
 
         {loading == false &&
-        config.DEALER_ADDRESSES_DEVNET.includes(wallet.address!) ? (
+        DEALER_ADDRESSES_DEVNET.includes(wallet.address!) ? (
           <Button
             variant="contained"
             color="secondary"

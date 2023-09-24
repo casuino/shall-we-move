@@ -194,7 +194,7 @@ const Buy = ({ setLoading }) => {
               marginRight: 2,
             }}
           />
-          <Typography sx={{ fontSize: 18 }}>SUICOIN</Typography>
+          <Typography sx={{ fontSize: 18 }}>CHIPSUI</Typography>
         </Box>
       </Box>
       <Button

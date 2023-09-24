@@ -101,7 +101,7 @@ const GameTableInfo = ({
             color: "secondary",
             fontWeight: "800",
           }}
-          label={`${bettingAmount} SUI`}
+          label={`${bettingAmount} CHIPSUI`}
           color="secondary"
           size="small"
         />

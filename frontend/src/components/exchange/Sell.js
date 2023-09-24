@@ -132,7 +132,7 @@ const Sell = ({ setLoading }) => {
               marginRight: 2,
             }}
           />
-          <Typography sx={{ fontSize: 18 }}>SUICOIN</Typography>
+          <Typography sx={{ fontSize: 18 }}>CHIPSUI</Typography>
         </Box>
       </Box>
       <Box sx={{ marginBottom: 4 }}>

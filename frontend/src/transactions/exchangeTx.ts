@@ -2,21 +2,22 @@ import {TransactionBlock} from "@mysten/sui.js/transactions";
 import {SuiClient} from "@mysten/sui.js/client";
 import {SuiSignAndExecuteTransactionBlockInput} from "@mysten/wallet-standard/src";
 
-import config from "../config.json";
-
-import {useWallet, WalletContextState} from "@suiet/wallet-kit";
+import {WalletContextState} from "@suiet/wallet-kit";
 import axios from "axios";
-import {waitForAll} from "recoil";
+import {
+    EXCHANGE_OBEJCT_ID_DEVNET,
+    GAS_BUDGET,
+    PACKAGE_ID_DEVNET,
+    SUI_FULLNODE_DEVNET_ENDPOINT,
+    VALIDATOR_ADDR_DEVNET,
+    SUI_SYSTEM_STATE_OBJECT_ID
+} from "../const/_const";
 
-// TODO: /src/config.json -> json으로 관리하지 말고 모듈로 관리하자. ex) /src/const/_const.ts
-
-const SUI_SYSTEM_STATE_OBJECT_ID = "0x0000000000000000000000000000000000000000000000000000000000000005";
-const VALIDATOR_ADDR_DEVNET = "0x8c507e31b85e2b0f5d67b6335fd44413cce9afe1d53b08ede7595e91dd61beaa";
 
 const MIST_UNIT = 1000000000;
 
 const suiClient = new SuiClient({
-    url: config.SUI_FULLNODE_DEVNET_ENDPOINT,
+    url: SUI_FULLNODE_DEVNET_ENDPOINT,
 });
 
 export const depositSui = async (amount: number, wallet: WalletContextState) => {
@@ -61,7 +62,7 @@ export const withdrawSui = async (amount: number, wallet: WalletContextState) =>
 // StakeSui Object ID를 가져오는 함수
 const getStakedSuiFromTxDigest = async (txBlockDigest: string): Promise<string> => {
     try {
-        const response = await axios.post(config.SUI_FULLNODE_DEVNET_ENDPOINT, {
+        const response = await axios.post(SUI_FULLNODE_DEVNET_ENDPOINT, {
             jsonrpc: "2.0",
             id: 1,
             method: "sui_getTransactionBlock",
@@ -77,8 +78,7 @@ const getStakedSuiFromTxDigest = async (txBlockDigest: string): Promise<string> 
                 }],
         });
 
-        console.log("getStakedSuiFromTxDigest: ", response.data)
-        const stakedSuiObjectId: string = response.data?.result?.effects?.created[0]?.reference?.objectId;
+        const stakedSuiObjectId = response?.data?.result?.effects?.created[0]?.reference?.objectId;
         return stakedSuiObjectId;
     }   catch(e) {
         throw new Error(e);
@@ -93,6 +93,7 @@ const stakeSuiTx = async (amount:number, wallet: WalletContextState): Promise<st
     // const digest = await txb.getDigest();
 
     const [coin] = txb.splitCoins(txb.gas, [txb.pure(amount * MIST_UNIT)]);
+    txb.setGasBudget(GAS_BUDGET);
 
     txb.moveCall({
         target: "0x3::sui_system::request_add_stake",
@@ -122,6 +123,7 @@ const stakeSuiTx = async (amount:number, wallet: WalletContextState): Promise<st
 const unStakeSuiTx = async (stakedSui_id: string, wallet: WalletContextState) => {
     const txb = new TransactionBlock();
 
+    txb.setGasBudget(GAS_BUDGET);
     txb.moveCall({
         target: "0x3::sui_system::request_withdraw_stake",
         arguments: [
@@ -138,6 +140,7 @@ const unStakeSuiTx = async (stakedSui_id: string, wallet: WalletContextState) =>
 
     try {
         const result = await wallet.signAndExecuteTransactionBlock(stx)
+        console.log("Unstake Sui Result: ", result.digest)
         return result.digest;
     }   catch(e) {
         throw new Error(e);
@@ -148,50 +151,12 @@ const unStakeSuiTx = async (stakedSui_id: string, wallet: WalletContextState) =>
 const depositStakedSui = async (stakedSui_id: string, wallet: WalletContextState) => {
     const txb = new TransactionBlock();
 
+    txb.setGasBudget(GAS_BUDGET);
     txb.moveCall({
-        target: `${config.PACKAGE_ID_DEVNET}::chipsui::depositStakedSui`,
+        target: `${PACKAGE_ID_DEVNET}::chipsui::depositStakedSui`,
         arguments: [
-            txb.object(config.EXCHANGE_OBEJCT_ID_DEVNET),
+            txb.object(EXCHANGE_OBEJCT_ID_DEVNET),
             txb.object(stakedSui_id),
-        ]
-    });
-
-    const stx: Omit<SuiSignAndExecuteTransactionBlockInput, "sui:devnet"> = {
-        transactionBlock: txb,
-        account: wallet.account,
-        chain: "sui:devnet",
-    }
-
-    return wallet.signAndExecuteTransactionBlock(stx)
-}
-
-
-// Chipsui를 StakedSui로 변환하는 함수
-export const withdrawStakedSui = async (amount: number, wallet: WalletContextState) => {
-    const txb = new TransactionBlock();
-    let chipId = "";
-
-    const myChips = await getMyChips(wallet);
-    for (let i = 0; i < myChips.length; i++) {
-        const chip = myChips[i];
-        const chipBalance = parseInt(chip.balance, 10) / MIST_UNIT;
-
-        if (chipBalance == amount) {
-            chipId = chip.coinObjectId;
-            break;
-        }
-    }
-
-    if (chipId == "") {
-        throw new Error("NOT FOUND: ChipSUI with that amount");
-    }
-
-    console.log("Chip ID: ", chipId);
-    txb.moveCall({
-        target: `${config.PACKAGE_ID_DEVNET}::chipsui::withdrawStakedSui`,
-        arguments: [
-            txb.object(config.EXCHANGE_OBEJCT_ID_DEVNET),
-            txb.object(chipId),
         ]
     });
 
@@ -203,23 +168,107 @@ export const withdrawStakedSui = async (amount: number, wallet: WalletContextSta
 
     try {
         const result = await wallet.signAndExecuteTransactionBlock(stx);
-        console.log("Withdraw StakedSui: ", result);
+        return result;
+    }   catch (e) {
+        throw new Error("[exchangeTx.ts:depositStakedSui] " + e);
+    }
+}
+
+
+// Chipsui를 StakedSui로 변환하는 함수
+export const withdrawStakedSui = async (amount: number, wallet: WalletContextState) => {
+    const txb = new TransactionBlock();
+    const amountInMist = amount * MIST_UNIT;
+
+    const chip = await splitMyChip(txb, amountInMist, wallet);
+
+    if(chip === null) {
+        throw new Error("[exchangeTx.ts:withdrawStakedSui] Not Enough Chips");
+    }
+    txb.setGasBudget(GAS_BUDGET);
+    txb.moveCall({
+        target: `${PACKAGE_ID_DEVNET}::chipsui::withdrawStakedSui`,
+        arguments: [
+            txb.object(EXCHANGE_OBEJCT_ID_DEVNET),
+            chip,
+        ]
+    });
+
+    const stx: Omit<SuiSignAndExecuteTransactionBlockInput, "sui:devnet"> = {
+        transactionBlock: txb,
+        account: wallet.account,
+        chain: "sui:devnet",
+    }
+
+    try {
+        const result = await wallet.signAndExecuteTransactionBlock(stx);
         return result.digest;
     }   catch(e) {
-        console.log("Withdraw StakedSui Error: ", e);
-        throw new Error(e);
+        throw new Error("[exchangeTx.ts:withdrawStakedSui] " + e);
     }
+}
+
+export const splitMyChip = async (txb: TransactionBlock, amount: number, wallet: WalletContextState) => {
+    const myChips = await getMyChips(wallet);
+
+    let chip = null;
+    let balanceSum = 0;
+    const chipIdArr = [];
+    for(let i = 0; i < myChips.length; i++){
+        const chipBalance = parseInt(myChips[i].balance, 10);
+
+        // 1개 chip으로 amount 만큼을 cover할 수 있는 경우
+        if(chipBalance >= amount){
+            const [coin] = txb.splitCoins(txb.object(myChips[i].coinObjectId), [txb.pure(amount)]);
+            chip = coin;
+            break;
+        }
+
+        balanceSum += chipBalance;
+        chipIdArr.push(myChips[i].coinObjectId);
+        // 여러 개 chip 합쳐서 amount 만큼을 cover할 수 있는 경우
+        if(balanceSum >= amount){
+            const sourceCoins = [];
+            for(let j = 1; j < chipIdArr.length; j++){
+                sourceCoins.push(txb.object(chipIdArr[j]));
+            }
+            txb.mergeCoins(txb.object(chipIdArr[0]), sourceCoins);
+            const [coin] = txb.splitCoins(txb.object(chipIdArr[0]), [txb.pure(amount)]);
+            chip = coin;
+            break;
+        }
+    }
+
+    // amount 만큼을 cover할 수 있는 chip이 없는 경우
+    if(chip === null){
+        return null;
+    }
+
+    return chip;
+
 }
 
 export const getMyChips = async (wallet: WalletContextState) => {
     const response = await suiClient.getCoins({
         owner: wallet.account.address,
-        coinType: `${config.PACKAGE_ID_DEVNET}::chipsui::CHIPSUI`
+        coinType: `${PACKAGE_ID_DEVNET}::chipsui::CHIPSUI`
     });
 
-    console.log("My Coins: ", response.data);
-
     return response.data;
+}
+
+export const getMyChipBalance = async (wallet: WalletContextState) => {
+    if(!wallet.account) {
+        return 0;
+    }
+    const myChips = await getMyChips(wallet);
+    let balance = 0;
+    for (let i = 0; i < myChips.length; i++) {
+        const chip = myChips[i];
+        balance += parseInt(chip.balance, 10) / MIST_UNIT;
+    }
+
+    return balance;
 }
 
 const getMyStakedSuiArr = async (wallet: WalletContextState) => {
