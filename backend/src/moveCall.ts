@@ -3,13 +3,12 @@ import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519';
 import { fromB64 } from '@mysten/sui.js/utils';
 import dotenv from "dotenv";
-import {CUR_NETWORK} from "./const/_const";
+import {CUR_NETWORK, GAS_BUDGET} from "./const/_const";
 import {splitMyChip} from "./chip";
 
 dotenv.config();
 
 const MODULE_NAME = "blackjack";
-const GAS_BUDGET = 30000000;
 const FILL_CARD_DECK_GAS_BUDEGT = 500000000;
 const MIST_PER_SUI = 1000000000;
 
