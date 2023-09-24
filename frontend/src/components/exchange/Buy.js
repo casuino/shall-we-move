@@ -3,18 +3,21 @@ import { Box, Button, Typography, TextField } from "@mui/material";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import sui from "../../images/coins/sui.png";
 import suiCoin from "../../images/coins/suicoin.png";
-import {depositSui} from "../../transactions/exchangeTx.ts";
-import {useWallet} from "@suiet/wallet-kit";
-import {toast} from "react-toastify";
+import { depositSui } from "../../transactions/exchangeTx.ts";
+import { useWallet } from "@suiet/wallet-kit";
+import { toast } from "react-toastify";
 
-const Buy = ({setLoading}) => {
+const Buy = ({ setLoading }) => {
   const [number, setNumber] = useState(0);
+  const [exchangeNumber, setExchangeNumber] = useState(0);
   const wallet = useWallet();
 
   const handleInputChange = (event) => {
     const inputValue = event.target.value;
     if (!isNaN(inputValue) && inputValue.length <= 7) {
+      const formattedNumber = inputValue ? inputValue * 0.8 : undefined;
       setNumber(inputValue);
+      setExchangeNumber(formattedNumber);
     }
   };
 
@@ -23,7 +26,7 @@ const Buy = ({setLoading}) => {
     await depositSui(amount, wallet);
     toast("Successfully stake your SUI!!", { autoClose: 2000 });
     setLoading(false);
-  }
+  };
 
   return (
     <Box
@@ -164,7 +167,9 @@ const Buy = ({setLoading}) => {
           }}
         >
           <Typography sx={{ color: "grey", fontWeight: "bold" }}>To</Typography>
-          <Box sx={{ fontSize: 36, maxWidth: 200 }}>{number}</Box>
+          <Box sx={{ fontSize: 36, maxWidth: 200 }}>
+            {exchangeNumber ? Math.round(exchangeNumber * 10000) / 10000 : 0}
+          </Box>
         </Box>
         <Box
           sx={{
@@ -191,7 +196,7 @@ const Buy = ({setLoading}) => {
         </Box>
       </Box>
       <Button
-          onClick={() => handleDeposit(number, wallet)}
+        onClick={() => handleDeposit(number, wallet)}
         variant="contained"
         color="secondary"
         sx={{ width: "100%", height: "15%", fontSize: 16, fontWeight: "bold" }}
