@@ -2,7 +2,8 @@ import axios from "axios";
 import config from "../config.json";
 
 const socket = new WebSocket(
-    process.env.mode === "production" ? "wss://shallwemove.xyz:8080" : "wss://localhost:8080"
+    //process.env.mode === "production" ? "wss://shallwemove.xyz:8080" : "wss://localhost:8080"
+	"wss://shallwemove.xyz:8080"
 );
 
 export async function getObject(object_id) {

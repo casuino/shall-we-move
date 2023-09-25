@@ -24,7 +24,8 @@ import GameTableScore from "./GameTableScore";
 
 // Create a WebSocket connection
 const socket = new WebSocket(
-    process.env.mode === "production" ? "wss://shallwemove.xyz:8080" : "wss://localhost:8080"
+    //process.env.mode === "production" ? "wss://shallwemove.xyz:8080" : "wss://localhost:8080"
+    "wss://shallwemove.xyz:8080"
 );
 
 // const BlackJack: React.FC = () => {
