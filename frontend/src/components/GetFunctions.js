@@ -2,7 +2,7 @@ import axios from "axios";
 import {GAME_TABLES_DEVNET, PACKAGE_ID_DEVNET, SUI_FULLNODE_DEVNET_ENDPOINT} from "../const/_const";
 
 const socket = new WebSocket(
-    process.env.mode === "production" ? "ws://shallwemove.xyz:8080" : "ws://localhost:8080"
+    "ws://localhost:8080"
 );
 
 export async function getObject(object_id) {

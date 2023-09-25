@@ -31,7 +31,7 @@ import {getMyChips} from "../transactions/exchangeTx";
 
 // Create a WebSocket connection
 const socket = new WebSocket(
-    process.env.mode === "production" ? "ws://shallwemove.xyz:8080" : "ws://localhost:8080"
+    "ws://localhost:8080"
 );
 
 // const BlackJack: React.FC = () => {
